@@ -1,9 +1,11 @@
 # ALPINE LINUX XFCE CUSTOM IMAGE FOR RASPBERRY PI by ConzZah
 
-This custom image provides Alpine Linux for Raspberry Pi (4) with fully configured xfce desktop
+![414088407-54fdeb62-6226-47c9-8b6d-8668cc3409fd(1)(1)](https://github.com/user-attachments/assets/2fa70502-21da-45c2-9db3-b45a7e0e4944)
+![414087952-78197726-51a4-4263-ba70-b886d2d02337(1)](https://github.com/user-attachments/assets/c4e559a2-916e-4260-a663-f49fc03d3ff9)
 
-### VERSION: Alpine aarch64 v3.21.3 // v0.0.1 ( INITIAL RELEASE )
+**This custom image provides Alpine Linux for Raspberry Pi (4 + 5) with fully configured xfce desktop**
 
+### VERSION: Alpine aarch64 v3.21.3 // v0.0.2
 
 ## what you get:
 
@@ -15,19 +17,17 @@ This custom image provides Alpine Linux for Raspberry Pi (4) with fully configur
 
 ## NOTES
 
-### general:
-
 **please be aware that:**
 
 - this is in **BETA**
-- i do this **because i have fun with it, i ain't getting paid bro.** if something breaks, let me know, and i'll see if i have the time.
+- i do this **because i have fun with it, i ain't getting paid bro.** if something breaks, let me know, and i'll see if i find time.
 
 
-### !! COMPATIBILITY !!:
+### COMPATIBILITY:
 
 **- RASPBERRY PI 4 / 400**
 
-**(an image for raspi 5 is in the works, which i will post when it's done.)**
+**- RASPBERRY PI 5 / 500**
 
 
 ### firstboot:
@@ -52,13 +52,11 @@ on first booting the system, it automatically generates new ssh keys and also **
 - flash image to sdcard
 - done
 
-**(using rpi-imager does not for some reason.)**
+**(using rpi-imager does not work for some reason.)**
 
 **================================================**
 
-This is the initial release, so expect bugs.
-if you find one, or have a suggestion, 
-don't hesitate to let me know.
+If you find a bug, or have a suggestion, don't hesitate to let me know.
 
 **THANKS TO EVERYONE WRITING SOFTWARE ON/WITH/FOR ALPINE LINUX !!**
 
