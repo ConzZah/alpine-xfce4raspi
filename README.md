@@ -62,7 +62,7 @@
 
 ### dd:
 
-sudo dd if=/path/to/image.img of=/dev/mmcblkX bs=512
+xz -dkc /path/to/img.xz | sudo dd of=/dev/mmcblkX bs=512
 
 **================================================**
 
