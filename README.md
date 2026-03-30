@@ -5,16 +5,15 @@
 
 **This custom image provides Alpine Linux for Raspberry Pi (4 + 5) with fully configured xfce desktop**
 
-### VERSION: Alpine aarch64 v3.21.3 // v0.0.3
+### VERSION: v0.0.4
 
 ## what you get:
 
 - a fully configured xfce desktop environment, out of the box.
-- basic system utils, ufw with defaults, network-manager, firefox, vlc, ffmpeg, fastfetch, pipewire, python etc.
+- basic system utils, ufw with defaults, network-manager, librewolf, mpv, ffmpeg, fastfetch, pipewire, python etc.
 - automatic resizing of your sdcard and generation of ssh keys on firstboot
 - bash as main shell
-- DOOM
-
+- DOOM + other extras
 
 ## NOTES
 
@@ -39,8 +38,9 @@
 
 ### SYSTEM SIZE:
 
-- img.xz: 354mb
-- actual system: 1.4gb
+- img.xz: 656MB
+- actual system: 2.5G
+- image size (extracted): 4G
 
 
 ### DEFAULT KEYMAP & TIMEZONE: German
@@ -53,16 +53,19 @@
 
 ## FLASHING: use gnome-disks or dd
 
+**MIN SDCARD SIZE: 8GB / 16GB > RECOMMENDED**
+
 ### gnome disks:
-- get literally any micro sdcard **(min: 4gb)**
-- choose "Restore Disk Image"
+- plug in your sdcard, but don't mount it
+- open gnome-disks & choose "Restore Disk Image"
 - navigate to the image
 - flash image to sdcard
-- done
 
 ### dd:
-
-xz -dkc /path/to/img.xz | sudo dd of=/dev/mmcblkX bs=512
+- plug in your sdcard, but don't mount it
+- use fdisk -l to find out what drive letter it has
+- then, fill in the blanks:
+**xz -dkc /path/to/img.xz | sudo dd of=/dev/mmcblkX bs=512**
 
 **================================================**
 
