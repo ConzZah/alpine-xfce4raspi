@@ -65,6 +65,7 @@
 - plug in your sdcard, but don't mount it
 - use fdisk -l to find out what drive letter it has
 - then, fill in the blanks:
+
 **xz -dkc /path/to/img.xz | sudo dd of=/dev/mmcblkX bs=512**
 
 **================================================**
