@@ -5,7 +5,7 @@
 
 **This custom image provides Alpine Linux for Raspberry Pi (4 + 5) with fully configured xfce desktop**
 
-### VERSION: v0.0.4
+### VERSION: v0.0.4-REDUX
 
 ## what you get:
 
@@ -13,7 +13,7 @@
 - basic system utils, ufw with defaults, network-manager, librewolf, mpv, ffmpeg, fastfetch, pipewire, python etc.
 - automatic resizing of your sdcard and generation of ssh keys on firstboot
 - bash as main shell
-- DOOM + other extras
+- DOOM + SameBoy
 
 ## NOTES
 
@@ -38,7 +38,7 @@
 
 ### SYSTEM SIZE:
 
-- img.xz: 656MB
+- img.xz: 666M
 - actual system: 2.5G
 - image size (extracted): 4G
 
