@@ -24,12 +24,10 @@ apk add chocolate-doom featherpad --repository="http://dl-cdn.alpinelinux.org/al
 
 ### install SameBoy
 ## download, extract & install prebuilt SameBoy
-curl -LO "https://github.com/ConzZah/sameboy4alpine/releases/download/latest/SameBoy-$(uname -m).7z" && \
-[ -d "SameBoy-$(uname -m).7z" ] && {
+curl -LO "https://github.com/ConzZah/sameboy4alpine/releases/download/latest/SameBoy-$(uname -m).7z"
 7z x -y "SameBoy-$(uname -m).7z"
 sh SameBoy/install.sh
-rm -fr "SameBoy-$(uname -m).7z"
-}
+rm -fr "SameBoy-$(uname -m).7z" "Sameboy"
 
 ## create $user
 setup-user -a -g audio,input,video,netdev "${user}"

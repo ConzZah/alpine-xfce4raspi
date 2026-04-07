@@ -91,7 +91,7 @@ wget "https://github.com/ConzZah/alpine-xfce4raspi/raw/refs/heads/main/setup.sh"
 chmod +x 'setup.sh'
 
 ## append to crontab (which will get overwritten by setup.sh at runtime)
-echo  '@reboot [ -f /root/setup.sh ] && { /bin/sh /root/setup.sh; rm -f /root/setup.sh ;}
+echo  '@reboot until ping -q -c 1 -w 1 google.com; do sleep 1; done; [ -f /root/setup.sh ] && { /bin/sh /root/setup.sh; rm -f /root/setup.sh ;}
 ' >> '/root/tmpmnt/var/spool/cron/crontabs/root'
 
 ## cd, unmount & reboot
