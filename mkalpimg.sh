@@ -30,7 +30,7 @@ mount| grep -q "$device" && printf '\n%s\n\n' "ERROR: $device IS STILL MOUNTED! 
 alpine_version="$(curl -sL "https://alpinelinux.org/downloads/"| grep "Current Alpine Version"| cut -d '<' -f 3| cut -d '>' -f 2)"
 
 ## spit out a name for our .img
-img="alpine-rpi0-${alpine_version}_$(date "+%Y-%m-%d")_${image_version_number}.img"
+img="alpine-xfce4raspi-aarch64-${alpine_version}_$(date "+%Y-%m-%d")_${image_version_number}.img"
 are_u_sure_about_that
 }
 
