@@ -24,7 +24,7 @@
 
 
 ### firstboot:
-**on first booting the system, it automatically generates new ssh keys and also reboots twice to finish resizing your sd-card.**
+**on first booting the system, it automatically generates new ssh keys and also reboots once to finish resizing your sd-card.**
 
 **don't be alarmed, this is expected.**
 
