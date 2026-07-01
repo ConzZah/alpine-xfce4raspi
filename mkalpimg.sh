@@ -12,10 +12,13 @@
 init () {
 part1="1"
 part2="2"
+
 sudo fdisk -l
-printf '\n\n%s' "DEVICE ( example: /dev/sdb ): "; read -r device; echo ""
-printf '%s' "SHRINK TO: ( example: +<int>M/G   ): "; read -r size; echo ""
-printf '%s' "IMAGE VERSION: "; read -r image_version_number; echo ""
+printf '\n\n%s' "IMAGE VERSION: "; read -r image_version_number
+
+printf '\n\n%s' "DEVICE ( example: /dev/sdb ): "; read -r device
+
+printf '\n\n%s' "SHRINK TO: ( example: +<int>M/G   ): "; read -r size
 
 ## if $device is /dev/mmcblkX, fix $part vars
 printf '%s' "$device"| grep -q '/dev/mmcblk.*' && { part1="p1"; part2="p2" ;}
@@ -27,7 +30,7 @@ mount| grep -q "$device" && printf '\n%s\n\n' "ERROR: $device IS STILL MOUNTED! 
 alpine_version="$(curl -sL "https://alpinelinux.org/downloads/"| grep "Current Alpine Version"| cut -d '<' -f 3| cut -d '>' -f 2)"
 
 ## spit out a name for our .img
-img="alpine-xfce4raspi-aarch64-${alpine_version}_$(date "+%Y-%m-%d")_${image_version_number}.img"
+img="alpine-rpi0-${alpine_version}_$(date "+%Y-%m-%d")_${image_version_number}.img"
 are_u_sure_about_that
 }
 
@@ -39,7 +42,8 @@ printf '%s\n\n' "DEVICE: $device"
 printf '%s\n\n' "SHRINK TO SIZE: $size"
 printf '%s' "[y/n/r] "
 read -r ynr; case $ynr in
-y|Y) ! fixfs && exit 1; resizefs_p2 ;; n|N) exit ;; r|R) init ;;
+y|Y) ! fixfs && exit 1; resizefs_p2 ;; 
+r|R) init ;;
 *) exit
 esac
 }
@@ -64,6 +68,7 @@ echo "$size" # +M/G value of 2nd partition
 echo "w" # Write changes to disk
 ) | sudo fdisk "${device}"
 printf "\nSDCARD PARTITIONED.\n"
+sudo partprobe
 create_img
 }
 
