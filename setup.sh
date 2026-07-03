@@ -171,5 +171,5 @@ chsh root -s /bin/bash
 chown -R "${user}":"${user}" -- "/home/$user".*
 chown -R "${user}":"${user}" -- "/home/$user"*
 
-## reboot
-sync; reboot
+## poweroff
+sync; sleep 10; poweroff
