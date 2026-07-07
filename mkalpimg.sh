@@ -13,7 +13,7 @@ image_name="alpine-xfce4raspi"
 init () {
 ## depcheck
 missing_deps=""
-deps="resize2fs partprobe lsblk fdisk fsck.fat e2fsck mount sed cut dd xz tr df"
+deps="resize2fs partprobe lsblk fdisk fsck.fat e2fsck dumpe2fs mount grep sed cut bc dd xz tr df"
  
 ## update $PATH, so fdisk, fsck.fat, e2fsck, etc can be found
 PATH="$PATH:/sbin:/usr/sbin"
@@ -40,12 +40,6 @@ device_name="$(printf '%s\n' "$device"| sed 's#/dev/##g')"
 ## check if the $device actually exists, else exit here
 ! lsblk| grep -q "$device_name" && printf '%s\n' "--> ERROR: $device DOESN'T EXIST!" && exit 1
 
-## create $tmpmnt
-tmpmnt1="/tmp/tmpmnt1"
-tmpmnt2="/tmp/tmpmnt2"
-mkdir -p "$tmpmnt1"
-mkdir -p "$tmpmnt2"
-
 ## set $part vars
 part1="1"
 part2="2"
@@ -66,25 +60,35 @@ tmp_mount
 ## get the $image_arch
 printf '%s\n' "--> TRYING TO GET THE IMAGE'S ARCHITECTURE"
 [ ! -f "$tmpmnt2/etc/apk/arch" ] && \
-printf '%s\n' "--> COULDN'T GET THE ARCHITECTURE OF THE IMAGE!" && exit 1
+printf '%s\n' "--> COULDN'T GET THE ARCHITECTURE OF THE IMAGE!" && { tmp_unmount; exit 1 ;}
 image_arch="$(cat "$tmpmnt2/etc/apk/arch")"
 printf '%s\n' "--> THE IMAGE'S ARCHITECTURE SEEMS TO BE: $image_arch"
 
 ## get df to output in mebibytes
 df_out="$(df -B M)"
 
-### get values of the chosen $device
-## here, we get the size of $device in bytes, and convert it to mebibytes
-total_size_device="$(($(lsblk -b| grep -m1 "$device_name"| tr -s ' '| cut -d ' ' -f 4) / 1048576 ))"
-
-## here, we get the total size of the first partition of $device
+## get the size of the first partition of $device
 total_size_p1="$(printf '%s\n' "$df_out"| grep "tmpmnt1"| tr -s ' '| cut -d ' ' -f 2| sed 's#M##g')"
 
-## here, we check how much of ${device}${part2} is actually used.
-used_size_p2="$(printf '%s\n' "$df_out"| grep "$tmpmnt2"| tr -s ' '| cut -d ' ' -f 3| sed 's#M##g')"
+## get the TOTAL size of $device in bytes, and convert it to mebibytes
+total_size_device="$(($(lsblk -b| grep -m1 "$device_name"| tr -s ' '| cut -d ' ' -f 4) / 1048576))"
 
-## now we'll take $used_size_p2, and multiply it by 1.5 (we can do this by taking $used_size_p2, multiplying it by 3 and dividing it by 2)
-new_size_p2="$((used_size_p2 * 3 / 2))"
+## get the actual blocksize of {device}${part2} in bytes
+blocksize_p2="$(sudo dumpe2fs "${device}${part2}"| grep "Block size"| tr -s ' '| cut -d ' ' -f 3)"
+
+## get the minimum size the rootfs can be (in blocks)
+minsize_blocks_p2="$(sudo resize2fs -P "${device}${part2}"| rev| cut -d ' ' -f 1| rev)"
+
+## convert $minsize_blocks_p2 to bytes and then to mebibytes
+new_size_p2=$((minsize_blocks_p2 * blocksize_p2 / 1048576))
+
+## add 10% extra so we don't run into issues 
+## (just to be safe, i've seen it fail if we just use the minimum size)
+new_size_p2="$(printf '%s\n' "scale=0; ${new_size_p2} * 1.1"| bc)"
+
+## also get rid of the decimal point if there is one:
+printf '%s\n' "$new_size_p2"| grep -q '.' && \
+new_size_p2="$(printf '%s\n' "$new_size_p2"| cut -d '.' -f 1)"
 
 ### now let's calculate the $final_size that the resulting image is going to have.
 ## we'll add $total_size_p1 and $new_size_p2
@@ -95,7 +99,7 @@ final_size="$((total_size_p1 + new_size_p2))"
 [ "$final_size" -gt "$total_size_device" ] && printf '%s\n' "--> ERROR: NO SPACE LEFT ON DEVICE!" && { tmp_unmount; exit 1 ;}
 
 ## make the final edit on the $size variable, so resize2fs & fdisk can use it.
-size="+${final_size}M"
+size="+${new_size_p2}M"
 
 ## get the current alpine version number
 alpine_version="$(curl -sL "https://alpinelinux.org/downloads/"| grep -m1 "Current Alpine Version"| cut -d '<' -f 3| cut -d '>' -f 2)"
@@ -111,7 +115,7 @@ are_u_sure_about_that () {
 ## ask the user if they really want to proceed
 printf '\n%s\n\n' "PROCEED WITH THESE VALUES? PLS BE SURE, (THIS IS FINAL.)"
 printf '%s\n\n' "DEVICE: $device"
-printf '%s\n\n' "SHRINK TO SIZE: $size"
+printf '%s\n\n' "SHRINK PARTITION 2 TO SIZE: $size"
 printf '%s' "[y/n/r] "
 read -r ynr; case $ynr in
 y|Y)
@@ -129,7 +133,7 @@ esac
 resizefs_p2 () {
 printf '\n%s\n\n' "--> RESIZING SDCARD"
 ! sudo resize2fs "${device}${part2}" "${size}" && \
-printf '\n%s\n' " --> RESIZE FAILED" && exit 1 || \
+printf '\n%s\n' " --> RESIZE FAILED" && { tmp_unmount; exit 1 ;} || \
 printf '%s\n' "--> RESIZE COMPLETE."
 recreate_parttable
 }
@@ -187,6 +191,12 @@ sync
 
 
 tmp_mount () {
+## create $tmpmnt
+tmpmnt1="/tmp/tmpmnt1"
+tmpmnt2="/tmp/tmpmnt2"
+mkdir -p "$tmpmnt1"
+mkdir -p "$tmpmnt2"
+
 ## mount the 1st partition of the chosen $device
 printf '\n%s\n' "--> TRYING TO MOUNT: ${device}${part1}"
 ! sudo mount "${device}${part1}" "$tmpmnt1" && \
